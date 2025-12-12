@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 
 from langgraph.prebuilt import create_agent
-from langchain_anthropic import ChatAnthropic
+from langchain.chat_models import init_chat_model
 
 from .tools import fetch_python_whatsnew
 
@@ -20,10 +20,12 @@ SYSTEM_PROMPT = (
 )
 
 
-def get_llm() -> ChatAnthropic:
+def get_llm():
+    # Prefer generic LangChain initializer for chat models
+    # Backward-compat envs: ANTHROPIC_MODEL/ANTHROPIC_TEMPERATURE
     model = os.getenv("ANTHROPIC_MODEL", "claude-3-7-sonnet-latest")
     temperature = float(os.getenv("ANTHROPIC_TEMPERATURE", "0.3"))
-    return ChatAnthropic(model=model, temperature=temperature)
+    return init_chat_model(model=model, temperature=temperature)
 
 
 def get_agent():
