@@ -1,0 +1,21 @@
+[project]
+name = "langchainexample2"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.10"
+dependencies = [
+    "langchain>=0.3.7",
+    "langchain-community>=0.3.7",
+    "langchain-anthropic>=0.2.0",
+    # Require a LangGraph version that includes the prebuilt create_agent API
+    "langgraph>=0.2.79",
+    "httpx>=0.27.2",
+    "beautifulsoup4>=4.12.3",
+    "pydantic>=2.8.2",
+    "python-dotenv>=1.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.14.8",
+]
