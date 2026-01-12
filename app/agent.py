@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import os
 
-from langgraph.prebuilt import create_agent
-from langchain.chat_models import init_chat_model
+from langchain.agents import create_agent
 
 from .tools import fetch_python_whatsnew
+
+from dotenv import load_dotenv
 
 
 SYSTEM_PROMPT = (
@@ -20,32 +21,22 @@ SYSTEM_PROMPT = (
 )
 
 
-def get_llm():
-    # Prefer generic LangChain initializer for chat models
-    # Backward-compat envs: ANTHROPIC_MODEL/ANTHROPIC_TEMPERATURE
-    model = os.getenv("ANTHROPIC_MODEL", "claude-3-7-sonnet-latest")
-    temperature = float(os.getenv("ANTHROPIC_TEMPERATURE", "0.3"))
-    return init_chat_model(model=model, temperature=temperature)
-
-
-def get_agent():
-    llm = get_llm()
-    tools = [fetch_python_whatsnew]
-    # LangChain v1: use LangGraph prebuilt generic agent (supersedes create_react_agent)
-    agent = create_agent(llm, tools)
-    return agent
-
-
 def run_newsletter() -> str:
-    agent = get_agent()
-    messages = [
-        ("system", SYSTEM_PROMPT),
-        (
-            "human",
-            "Use the tool to fetch the latest 'What's New in Python' and then write the release marketing newsletter.",
-        ),
-    ]
-    result = agent.invoke({"messages": messages})
+    load_dotenv()
+
+    agent = create_agent(
+        model=os.getenv("OPENAI_MODEL", "gpt-4o"),
+        tools=[fetch_python_whatsnew],
+        system_prompt=SYSTEM_PROMPT,
+        # response_format=ToolStrategy(ResponseFormat),
+    )
+
+    messages = "Use the tool to fetch the latest 'What's New in Python' and then write the release marketing newsletter."
+    # result = agent.invoke({"messages": messages})
+    # import pdb; pdb.set_trace()
+    result = agent.invoke({"messages": [{"role": "user", "content": messages}]})
+
+
     # LangGraph agents return a state dict with a `messages` list; take the last AI message
     msgs = result.get("messages", [])
     if not msgs:

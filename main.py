@@ -13,16 +13,16 @@ def main() -> int:
     load_dotenv()
 
     parser = argparse.ArgumentParser(
-        description="Generate a Python release marketing newsletter with LangChain + Anthropic."
+        description="Generate a Python release marketing newsletter with LangChain + OpenAI."
     )
     parser.add_argument(
         "--out", type=Path, help="Optional path to save the newsletter markdown."
     )
     args = parser.parse_args()
 
-    if not os.getenv("ANTHROPIC_API_KEY"):
+    if not os.getenv("OPENAI_API_KEY"):
         print(
-            "ERROR: ANTHROPIC_API_KEY is not set. Set it in your environment or a .env file."
+            "ERROR: OPENAI_API_KEY is not set. Set it in your environment or a .env file."
         )
         return 1
 

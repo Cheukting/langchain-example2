@@ -34,11 +34,11 @@ def _find_latest_entry(index_html: str) -> Optional[WhatsNewEntry]:
     soup = BeautifulSoup(index_html, "html.parser")
     # The "What's New" index lists links under main content
     candidates = []
-    for a in soup.select("main a[href]"):
-        text = (a.get_text() or "").strip()
-        href = a.get("href")
+    for a_tag in soup.find_all('a'):
+        text = (a_tag.get_text() or "").strip()
+        href = a_tag.get("href")
         # Look for entries like "What's New In Python 3.x"
-        if text.lower().startswith("what's new in python 3") and href:
+        if text.lower().startswith("what’s new in python 3") and href:
             # Normalize URL
             url = href if href.startswith("http") else BASE_URL + href
             m = re.search(r"3\.(\d+)", text)
@@ -106,7 +106,7 @@ def _extract_highlights(article_html: str) -> str:
 
 
 @tool("fetch_python_whatsnew", return_direct=False)
-def fetch_python_whatsnew(_) -> str:
+def fetch_python_whatsnew() -> str:
     """
     Fetch the latest "What's New in Python" article and return a concise, cleaned
     text payload including the URL and extracted section highlights.
